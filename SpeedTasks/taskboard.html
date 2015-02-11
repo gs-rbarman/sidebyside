@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Speed Tasks</title>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+  <link href='./css/reset.css' rel='stylesheet' type='test/css'>
+  <link href='./css/styles.css' rel='stylesheet' type='test/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+  <div id="board">
+    <ul id=listone>
+      <li>TASKS</li>
+      <li id='delete' class="hideCross"><img onclick='del()' height="16" width="16" src="./images/delete.png" alt="delete task"></li>
+    </ul>
+    <div class="list"></div>
+    <input placeholder="Add task here" id='todo' type='text' onchange="show()" name='task'>
+  </div>
+</body>
+<script type='text/javascript'>
+
+  var taskArray = [];
+
+  if (localStorage.length != 0) {
+      for (e in localStorage) {
+        taskArray[e] = localStorage.getItem(e);
+      }
+  }
+
+
+  function show() {
+    var task = $('#todo').val();
+    if ( $('#todo').val() != '') {
+      var count = taskArray.length;
+
+      taskArray.push(task);
+      $('.list').append("<div class='tasks'><input class='taskCheck' onclick='clickme(this)' type='checkbox'><span class='taskNo'>"+ count +"</span>&nbsp;<span class='task'>"+taskArray[count]+"</span></div>");
+      $('#todo').val('');
+
+      localStorage.clear();
+      for (e in taskArray) {
+        localStorage.setItem(e, taskArray[e]);
+      }
+    }
+  }
+
+  if (localStorage.length != 0) {
+    for (e in localStorage) {
+      $('.list').append("<div class='tasks'><input class='taskCheck' onclick='clickme(this)' type='checkbox'><span class='taskNo'>"+ e +"</span>&nbsp;<span class='task'>"+localStorage.getItem(e)+"</span></div>");
+    }
+  }
+
+  function clickme(x) {
+    if (!x.checked) {
+      $(x).checked = true;
+      $("#delete").removeClass('showCross').addClass('hideCross');
+    }
+    if (x.checked) {
+      $(x).checked = false;
+      $("#delete").removeClass('hideCross').addClass('showCross');
+    }
+  }
+  function del() {
+    var count = taskArray.length;
+    var checkedTasks = [];
+    if (count > 0) {
+      $('.taskCheck:checked').each(function(){
+        checkedTasks.push($(this).next().next().html());
+        $(this).parent().remove();
+      });
+
+      var index = 0;
+      $('.taskNo').each(function(){$(this).html(index++)});
+      console.log(checkedTasks);
+
+      for (index in checkedTasks) {
+        var arrIndex = taskArray.indexOf(checkedTasks[index]);
+        taskArray.splice(arrIndex, 1);
+      }
+
+      localStorage.clear();
+      for (e in taskArray) {
+        localStorage.setItem(e, taskArray[e]);
+      }
+    }
+
+    $("#delete").removeClass('showCross').addClass('hideCross');
+  }
+
+
+</script>
+</html>
